@@ -48572,6 +48572,7 @@ spec:
                         of resources to be generated.
                       type: string
                   type: object
+                minItems: 1
                 type: array
               matchConditions:
                 description: |-
@@ -48997,6 +48998,20 @@ spec:
                 x-kubernetes-list-map-keys:
                 - name
                 x-kubernetes-list-type: map
+              webhookConfiguration:
+                description: WebhookConfiguration defines the configuration for the
+                  webhook.
+                properties:
+                  timeoutSeconds:
+                    description: |-
+                      TimeoutSeconds specifies the maximum time in seconds allowed to apply this policy.
+                      After the configured time expires, the admission request may fail, or may simply ignore the policy results,
+                      based on the failure policy. The default timeout is 10s, the value must be between 1 and 30 seconds.
+                    format: int32
+                    type: integer
+                type: object
+            required:
+            - generate
             type: object
         required:
         - spec
@@ -51161,8 +51176,26 @@ spec:
                           - attestors
                           - validations
                           type: object
+                        targets:
+                          items:
+                            properties:
+                              group:
+                                type: string
+                              kind:
+                                type: string
+                              resource:
+                                type: string
+                              version:
+                                type: string
+                            required:
+                            - kind
+                            - resource
+                            - version
+                            type: object
+                          type: array
                       required:
                       - spec
+                      - targets
                       type: object
                     type: object
                 type: object
@@ -52640,8 +52673,26 @@ spec:
                                   type: integer
                               type: object
                           type: object
+                        targets:
+                          items:
+                            properties:
+                              group:
+                                type: string
+                              kind:
+                                type: string
+                              resource:
+                                type: string
+                              version:
+                                type: string
+                            required:
+                            - kind
+                            - resource
+                            - version
+                            type: object
+                          type: array
                       required:
                       - spec
+                      - targets
                       type: object
                     type: object
                 type: object
@@ -54276,8 +54327,26 @@ spec:
                                   type: integer
                               type: object
                           type: object
+                        targets:
+                          items:
+                            properties:
+                              group:
+                                type: string
+                              kind:
+                                type: string
+                              resource:
+                                type: string
+                              version:
+                                type: string
+                            required:
+                            - kind
+                            - resource
+                            - version
+                            type: object
+                          type: array
                       required:
                       - spec
+                      - targets
                       type: object
                     type: object
                 type: object
@@ -55882,6 +55951,7 @@ rules:
       - validatingpolicies/status
       - imagevalidatingpolicies
       - imagevalidatingpolicies/status
+      - generatingpolicies
     verbs:
       - create
       - delete
@@ -57163,6 +57233,7 @@ spec:
             - --servicePort=443
             - --webhookServerPort=9443
             - --resyncPeriod=15m
+            - --crdWatcher=false
             - --disableMetrics=false
             - --otelConfig=prometheus
             - --metricsPort=8000
